@@ -51,38 +51,64 @@ method isSubstring(sub: string, str: string) returns (res:bool)
   var a := sub[i];
   var b := str[j];
 
-  while (i < |sub| - |str|)
-    decreases |str| - |str| - i;
-
-    invariant i <= (|str| - |sub|);
+  while (i < |str| - |sub|)
+    decreases |str| - |sub| - i;
+    invariant 0 <= i <= (|str| - |sub|);
     // if the searched-for substring is of length n,
     // don't try to search for prefixes that begin after the nth position
-    // sub = ate, str = carat:
-    //
-    // | c | a | r | a | t |
-    //
-    // | 0 | 1 | 2 | 3 | 4 |
-    //           i
-
-    invariant 0 <= i <= |str|;
-
-    invariant a in sub;
-    invariant b in str;
-    invariant |str[i..]| <= |str|;
+    // so if we have a length 3 substring candidate, and a length 5 string,
+    // there's no reason to try and keep testing if we go past the 5-3=2nd position
+    // |a|b|c|d|e|
+    //        ^^^
+    //  d|e|f       -> i = 0        => continue searching
+    //    d|e|f     -> i = 1        => continue searching
+    //      d|e|f   -> i = 2        => continue searching
+    //        d|e|f -> i = 3, i > 2 => FAIL
   {
-    var isAPrefix := isPrefix(sub, str[i..]);
-    if (isAPrefix) {
+    var subIsPrefixOfSlice := isPrefix(sub, str[i..]);
+
+    if (subIsPrefixOfSlice) {
       return true;
     }
+
     i := i + 1;
   }
 
   return false;
 }
 
+
 // The following method should return true if and only if str1
 // and str1 have a common substring of length k.
 method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
+  requires k <= |str1| && k <= |str2|;
+{
+  //taking cues from sets, the null string "" is a substring of every string
+  if (k == 0) {
+    return true;
+  }
+
+  //reduce our search space to the smaller of the two strings
+  var shorter;
+  var longer;
+  if (|str1| <= |str2|) {
+    shorter := str1;
+    longer := str2;
+  } else {
+    longer := str1;
+    shorter := str2;
+  }
+
+
+  var i := 0;
+  var candidate;
+  while (i <= |shorter| - k)
+    invariant i <= i+k-1;
+  {
+    candidate := shorter[i..i+k-1]
+  }
+
+}
 
 // The following method should return the natural number len which is equal to
 // the length of the longest common substring of str1 and str2. Note that every two
