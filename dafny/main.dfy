@@ -14,6 +14,11 @@ method isPrefix(pre: string, str: string) returns (res:bool)
   var a := pre[i];
   var b := str[i];
 
+  if (a != b) {
+    return false;
+  }
+
+  i := i + 1;
   while (i < |pre|)
     decreases |pre| - i;
     invariant 0 <= i <= |pre|
@@ -83,7 +88,8 @@ method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: 
     return true;
   }
 
-  //reduce our search space to the smaller of the two strings
+  // reduce our search space to the smaller of the two strings
+  // I think this is better for cache coherency
   var shorter;
   var longer;
   if (|str1| <= |str2|) {
@@ -96,16 +102,32 @@ method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: 
 
 
   var i := 0;
+  var j := 0;
   var candidate;
+  var isAPrefix;
   while (i <= |shorter| - k)
+    decreases |shorter| - k - i;
     invariant i <= i+k-1;
   {
     candidate := shorter[i..i+k-1];
+    while (j <= |longer| - k)
+      decreases |longer| - k - j;
+    {
+      isAPrefix := isPrefix(candidate, longer);
+      if (isAPrefix) {
+        return true;
+      }
+      j := j + 1;
+    }
+    i := i + 1;
   }
-
+  return false;
 }
 
 // The following method should return the natural number len which is equal to
 // the length of the longest common substring of str1 and str2. Note that every two
 // strings have a common substring of length zero.
 method maxCommonSubstringLength(str1: string, str2: string) returns (len:nat)
+{
+
+}
