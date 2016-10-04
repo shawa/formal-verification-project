@@ -1,32 +1,30 @@
 // The following method should return true if and only if pre is a prefix of
 // str. That is, str starts with pre.
 method isPrefix(pre: string, str: string) returns (res:bool)
-  requires |pre| > 0;
-  requires |str| > 0;
-  requires |pre| <= |str|;
+  requires |pre| <= |str|;  //sub can be contained in str
 {
+  if (|pre| == 0) {
+    // following from the logic presented in the description
+    // for maxCommonSubstringLength, and sets, it holds that
+    // the null string is a prefix of any string, including itself
+    return true;
+  }
+
   var i := 0;
   var a := pre[i];
   var b := str[i];
 
-  if (a != b) {
-   return false;
-  }
-
-  i := i + 1;
-
   while (i < |pre|)
     decreases |pre| - i;
+    invariant 0 <= i <= |pre|
     invariant a in pre;
     invariant b in str;
-    invariant a == b;
   {
     a := pre[i];
     b := str[i];
     if (a != b) {
       return false;
     }
-
     i := i + 1;
   }
 
@@ -36,16 +34,13 @@ method isPrefix(pre: string, str: string) returns (res:bool)
 // The following method should return true if and only if sub is a substring of
 // str. That is, str contains sub.
 method isSubstring(sub: string, str: string) returns (res:bool)
-  requires |sub| > 0;
-  // sub is nonzero
-
-  requires |str| > 0;
-  // str is nonzero
-
-  requires |sub| <= |str|;
-  // sub can be contained in str
-
+  requires |sub| <= |str|; // sub can be contained in str
 {
+  if (|sub| == 0){
+    // similarly to isPrefix, the null string is a substring of every string,
+    // including itself
+    return true;
+  }
   var i := 0;
   var j := 0;
   var a := sub[i];
@@ -58,15 +53,15 @@ method isSubstring(sub: string, str: string) returns (res:bool)
     // don't try to search for prefixes that begin after the nth position
     // so if we have a length 3 substring candidate, and a length 5 string,
     // there's no reason to try and keep testing if we go past the 5-3=2nd position
-    // |a|b|c|d|e|
-    //        ^^^
-    //  d|e|f       -> i = 0        => continue searching
-    //    d|e|f     -> i = 1        => continue searching
-    //      d|e|f   -> i = 2        => continue searching
-    //        d|e|f -> i = 3, i > 2 => FAIL
+    //  | a | b | c | d | e |
+    //                ^^^^^^---not within search space
+    //
+    //  d | e | f               -> i = 0        => continue searching
+    //      d | e | f           -> i = 1        => continue searching
+    //          d | e | f       -> i = 2        => continue searching
+    //              d | e | f   -> i = 3, i > 2 => FAIL
   {
     var subIsPrefixOfSlice := isPrefix(sub, str[i..]);
-
     if (subIsPrefixOfSlice) {
       return true;
     }
@@ -105,7 +100,7 @@ method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: 
   while (i <= |shorter| - k)
     invariant i <= i+k-1;
   {
-    candidate := shorter[i..i+k-1]
+    candidate := shorter[i..i+k-1];
   }
 
 }
