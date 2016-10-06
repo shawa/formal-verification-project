@@ -96,6 +96,13 @@ method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: 
   }
 
 
+  if (|str1| < |str2|) {
+    shorter := str1;
+    longer := str2;
+  } else {
+    shorter := str2;
+    longer := str1;
+  }
 
   while (i <= |shorter| - k)
     decreases |shorter| - k - i;
@@ -116,3 +123,36 @@ method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: 
   return false;
 }
 
+
+method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
+  ensures k <= |str1| && k <= |str2|;
+{
+  var shorter: string;
+  var longer: string;
+  var thereIsACommonSubstring: bool;
+
+  k := 0;
+  if (|str1| <= |str2|) {
+    shorter := str1;
+    longer := str2;
+  } else {
+    shorter := str2;
+    longer := str1;
+  }
+
+
+  while (k <= |shorter|)
+    decreases |shorter| - k;
+  {
+   thereIsACommonSubstring := haveCommonKSubstring(k, shorter, longer);
+   if (!thereIsACommonSubstring) {
+    return k;
+   } else {
+    break;
+   }
+
+   k := k + 1;
+
+  }
+  return k;
+}

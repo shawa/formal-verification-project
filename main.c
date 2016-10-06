@@ -1,6 +1,6 @@
-// The following method should return true if and only if pre is a prefix of
+// The following  should return true if and only if pre is a prefix of
 // str. That is, str starts with pre.
-method isPrefix(pre: string, str: string) returns (res:bool)
+ bool isPrefix(pre: string, str: string) returns (res:bool)
   requires |pre| <= |str|;  //sub can be contained in str
 {
   if (|pre| == 0) {
@@ -36,9 +36,9 @@ method isPrefix(pre: string, str: string) returns (res:bool)
   return true;
 }
 
-// The following method should return true if and only if sub is a substring of
+// The following  should return true if and only if sub is a substring of
 // str. That is, str contains sub.
-method isSubstring(sub: string, str: string) returns (res:bool)
+bool isSubstring(sub: string, str: string) returns (res:bool)
   requires |sub| <= |str|; // sub can be contained in str
 {
   if (|sub| == 0){
@@ -78,9 +78,9 @@ method isSubstring(sub: string, str: string) returns (res:bool)
 }
 
 
-// The following method should return true if and only if str1
+// The following  should return true if and only if str1
 // and str1 have a common substring of length k.
-method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
+bool haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
   requires k <= |str1| && k <= |str2|;
 {
   var candidate: string;
