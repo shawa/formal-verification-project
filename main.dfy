@@ -48,9 +48,6 @@ method isSubstring(sub: string, str: string) returns (res:bool)
   }
   var i: nat := 0;
   var j: nat := 0;
-  var a: char := sub[i];
-  var b: char := str[j];
-
   while (i < |str| - |sub|)
     decreases |str| - |sub| - i;
     invariant 0 <= i <= (|str| - |sub|);
@@ -66,7 +63,7 @@ method isSubstring(sub: string, str: string) returns (res:bool)
     //          d | e | f       -> i = 2        => continue searching
     //              d | e | f   -> i = 3, i > 2 => FAIL
   {
-    var subIsPrefixOfSlice := isPrefix(sub, str[i..]);
+    var subIsPrefixOfSlice: bool := isPrefix(sub, str[i..]);
     if (subIsPrefixOfSlice) {
       return true;
     }

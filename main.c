@@ -1,36 +1,48 @@
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+
+char *slice(char* str, uint64_t start, uint64_t end)
+{
+
+  char slicedLength = (end-start) + 1;
+  char *result = malloc(sizeof(char) * (slicedLength + 1));
+  memcpy(result, str+start, slicedLength + 1);
+  *(result + slicedLength) = '\0';
+  return result;
+}
+
 // The following method should return true if and only if pre is a prefix of
 // str. That is, str starts with pre.
-method isPrefix(pre: string, str: string) returns (res:bool)
-  requires |pre| <= |str|;  //sub can be contained in str
+bool isPrefix(char *pre, char *str)
 {
-  if (|pre| == 0) {
+  if (strlen(pre) == 0) {
     // following from the logic presented in the description
     // for maxCommonSubstringLength, and sets, it holds that
     // the null string is a prefix of any string, including itself
     return true;
   }
 
-  var i: nat := 0;
-  var a: char := pre[i];
-  var b: char := str[i];
+  uint64_t i = 0;
+  char a = pre[i];
+  char b = str[i];
 
   if (a != b) {
     return false;
   }
 
-  i := i + 1;
-  while (i < |pre|)
-    decreases |pre| - i;
-    invariant 0 <= i <= |pre|
-    invariant a in pre;
-    invariant b in str;
+  i = i + 1;
+  while (i < strlen(pre))
   {
-    a := pre[i];
-    b := str[i];
+    a = pre[i];
+    b = str[i];
     if (a != b) {
       return false;
     }
-    i := i + 1;
+    i = i + 1;
   }
 
   return true;
@@ -38,22 +50,18 @@ method isPrefix(pre: string, str: string) returns (res:bool)
 
 // The following method should return true if and only if sub is a substring of
 // str. That is, str contains sub.
-method isSubstring(sub: string, str: string) returns (res:bool)
-  requires |sub| <= |str|; // sub can be contained in str
+bool isSubstring(char *sub, char *str)
+
 {
-  if (|sub| == 0){
+  if (strlen(sub) == 0){
     // similarly to isPrefix, the null string is a substring of every string,
     // including itself
     return true;
   }
-  var i: nat := 0;
-  var j: nat := 0;
-  var a: char := sub[i];
-  var b: char := str[j];
-
-  while (i < |str| - |sub|)
-    decreases |str| - |sub| - i;
-    invariant 0 <= i <= (|str| - |sub|);
+  uint64_t i = 0;
+  uint64_t j = 0;
+  bool subIsPrefixOfSlice;
+  while (i < strlen(str) - strlen(sub))
     // if the searched-for substring is of length n,
     // don't try to search for prefixes that begin after the nth position
     // so if we have a length 3 substring candidate, and a length 5 string,
@@ -66,12 +74,12 @@ method isSubstring(sub: string, str: string) returns (res:bool)
     //          d | e | f       -> i = 2        => continue searching
     //              d | e | f   -> i = 3, i > 2 => FAIL
   {
-    var subIsPrefixOfSlice := isPrefix(sub, str[i..]);
+    subIsPrefixOfSlice = isPrefix(sub, str+i);
     if (subIsPrefixOfSlice) {
       return true;
     }
 
-    i := i + 1;
+    i = i + 1;
   }
 
   return false;
@@ -80,79 +88,81 @@ method isSubstring(sub: string, str: string) returns (res:bool)
 
 // The following method should return true if and only if str1
 // and str1 have a common substring of length k.
-method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
-  requires k <= |str1| && k <= |str2|;
+bool haveCommonKSubstring(uint64_t k, char  *str1, char *str2)
 {
-  var candidate: string;
-  var longer: string;
-  var shorter: string;
-  var i: nat := 0;
-  var j: nat := 0;
-  var isAPrefix: bool;
+  char *candidate;
+  char *longer;
+  char *shorter;
+  uint64_t i = 0;
+  uint64_t j = 0;
 
+  bool isAPrefix;
   //taking cues from sets, the null string "" is a substring of every string
   if (k == 0) {
     return true;
   }
 
 
-  if (|str1| < |str2|) {
-    shorter := str1;
-    longer := str2;
+  if (strlen(str1) < strlen(str2)) {
+    shorter = str1;
+    longer = str2;
   } else {
-    shorter := str2;
-    longer := str1;
+    shorter = str2;
+    longer = str1;
   }
 
-  while (i <= |shorter| - k)
-    decreases |shorter| - k - i;
-    invariant i <= i+k-1;
+  while (i <= strlen(shorter) - k)
   {
-    candidate := shorter[i..i+k-1];
-    while (j <= |longer| - k)
-      decreases |longer| - k - j;
+    candidate = slice(shorter, i, i+k-1);
+    while (j <= strlen(longer) - k)
     {
-      isAPrefix := isPrefix(candidate, longer);
+      isAPrefix = isPrefix(candidate, longer);
       if (isAPrefix) {
         return true;
       }
-      j := j + 1;
+      j = j + 1;
     }
-    i := i + 1;
+    i = i + 1;
   }
+
+  free(candidate);
   return false;
 }
 
 
-method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
-  ensures k <= |str1| && k <= |str2|;
+uint64_t maxKCommonSubString(char *str1, char *str2)
 {
-  var shorter: string;
-  var longer: string;
-  var thereIsACommonSubstring: bool;
-
-  k := 0;
-  if (|str1| <= |str2|) {
-    shorter := str1;
-    longer := str2;
+  char *shorter;
+  char *longer;
+  bool thereIsACommonSubstring;
+  uint64_t k;
+  k = 0;
+  if (strlen(str1) <= strlen(str2)) {
+    shorter = str1;
+    longer = str2;
   } else {
-    shorter := str2;
-    longer := str1;
+    shorter = str2;
+    longer = str1;
   }
 
 
-  while (k <= |shorter|)
-    decreases |shorter| - k;
+  while (k <= strlen(shorter))
   {
-   thereIsACommonSubstring := haveCommonKSubstring(k, shorter, longer);
+   thereIsACommonSubstring = haveCommonKSubstring(k, shorter, longer);
    if (!thereIsACommonSubstring) {
     return k;
    } else {
     break;
    }
 
-   k := k + 1;
+   k = k + 1;
 
   }
   return k;
+}
+
+
+int main(void)
+{
+  return 1;
 }
