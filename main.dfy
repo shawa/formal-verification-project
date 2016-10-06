@@ -10,9 +10,9 @@ method isPrefix(pre: string, str: string) returns (res:bool)
     return true;
   }
 
-  var i := 0;
-  var a := pre[i];
-  var b := str[i];
+  var i: nat := 0;
+  var a: char := pre[i];
+  var b: char := str[i];
 
   if (a != b) {
     return false;
@@ -46,10 +46,10 @@ method isSubstring(sub: string, str: string) returns (res:bool)
     // including itself
     return true;
   }
-  var i := 0;
-  var j := 0;
-  var a := sub[i];
-  var b := str[j];
+  var i: nat := 0;
+  var j: nat := 0;
+  var a: char := sub[i];
+  var b: char := str[j];
 
   while (i < |str| - |sub|)
     decreases |str| - |sub| - i;
@@ -83,28 +83,20 @@ method isSubstring(sub: string, str: string) returns (res:bool)
 method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
   requires k <= |str1| && k <= |str2|;
 {
+  var candidate: string;
+  var longer: string;
+  var shorter: string;
+  var i: nat := 0;
+  var j: nat := 0;
+  var isAPrefix: bool;
+
   //taking cues from sets, the null string "" is a substring of every string
   if (k == 0) {
     return true;
   }
 
-  // reduce our search space to the smaller of the two strings
-  // I think this is better for cache coherency
-  var shorter;
-  var longer;
-  if (|str1| <= |str2|) {
-    shorter := str1;
-    longer := str2;
-  } else {
-    longer := str1;
-    shorter := str2;
-  }
 
 
-  var i := 0;
-  var j := 0;
-  var candidate;
-  var isAPrefix;
   while (i <= |shorter| - k)
     decreases |shorter| - k - i;
     invariant i <= i+k-1;
@@ -124,10 +116,3 @@ method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: 
   return false;
 }
 
-// The following method should return the natural number len which is equal to
-// the length of the longest common substring of str1 and str2. Note that every two
-// strings have a common substring of length zero.
-method maxCommonSubstringLength(str1: string, str2: string) returns (len:nat)
-{
-
-}
