@@ -160,9 +160,3 @@ uint64_t maxKCommonSubString(char *str1, char *str2)
   }
   return k;
 }
-
-
-int main(void)
-{
-  return 1;
-}
