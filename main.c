@@ -1,6 +1,6 @@
-// The following  should return true if and only if pre is a prefix of
+// The following method should return true if and only if pre is a prefix of
 // str. That is, str starts with pre.
- bool isPrefix(pre: string, str: string) returns (res:bool)
+method isPrefix(pre: string, str: string) returns (res:bool)
   requires |pre| <= |str|;  //sub can be contained in str
 {
   if (|pre| == 0) {
@@ -36,9 +36,9 @@
   return true;
 }
 
-// The following  should return true if and only if sub is a substring of
+// The following method should return true if and only if sub is a substring of
 // str. That is, str contains sub.
-bool isSubstring(sub: string, str: string) returns (res:bool)
+method isSubstring(sub: string, str: string) returns (res:bool)
   requires |sub| <= |str|; // sub can be contained in str
 {
   if (|sub| == 0){
@@ -78,9 +78,9 @@ bool isSubstring(sub: string, str: string) returns (res:bool)
 }
 
 
-// The following  should return true if and only if str1
+// The following method should return true if and only if str1
 // and str1 have a common substring of length k.
-bool haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
+method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
   requires k <= |str1| && k <= |str2|;
 {
   var candidate: string;
@@ -96,6 +96,13 @@ bool haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bo
   }
 
 
+  if (|str1| < |str2|) {
+    shorter := str1;
+    longer := str2;
+  } else {
+    shorter := str2;
+    longer := str1;
+  }
 
   while (i <= |shorter| - k)
     decreases |shorter| - k - i;
@@ -116,3 +123,36 @@ bool haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bo
   return false;
 }
 
+
+method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
+  ensures k <= |str1| && k <= |str2|;
+{
+  var shorter: string;
+  var longer: string;
+  var thereIsACommonSubstring: bool;
+
+  k := 0;
+  if (|str1| <= |str2|) {
+    shorter := str1;
+    longer := str2;
+  } else {
+    shorter := str2;
+    longer := str1;
+  }
+
+
+  while (k <= |shorter|)
+    decreases |shorter| - k;
+  {
+   thereIsACommonSubstring := haveCommonKSubstring(k, shorter, longer);
+   if (!thereIsACommonSubstring) {
+    return k;
+   } else {
+    break;
+   }
+
+   k := k + 1;
+
+  }
+  return k;
+}
