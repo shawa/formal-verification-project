@@ -1,6 +1,6 @@
 // The following method should return true if and only if pre is a prefix of
 // str. That is, str starts with pre.
-method isPrefix(pre: string, str: string) returns (res:bool)
+method isPrefix(pre: string, str: string) returns (res: bool)
   requires |pre| <= |str|;  //sub can be contained in str
 {
   if (|pre| == 0) {
@@ -38,7 +38,7 @@ method isPrefix(pre: string, str: string) returns (res:bool)
 
 // The following method should return true if and only if sub is a substring of
 // str. That is, str contains sub.
-method isSubstring(sub: string, str: string) returns (res:bool)
+method isSubstring(sub: string, str: string) returns (res: bool)
   requires |sub| <= |str|; // sub can be contained in str
 {
   if (|sub| == 0){
