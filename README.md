@@ -1,7 +1,6 @@
 # CS4004 Project
 
-Implement in Dafny the following methods
-
+## Implement in Dafny the following methods
 The following method should return true if and only if pre is a prefix of str. That is, str starts with pre.
 ```dafny
 method isPrefix(pre: string, str: string) returns (res:bool)
@@ -22,6 +21,7 @@ The following method should return the natural number len which is equal to the 
 method maxCommonSubstringLength(str1: string, str2: string) returns (len:nat)
 ```
 
+## Notes
 When implementing each of these methods you should make calls to the previous methods. Although this may not lead to the most optimal implementations, it will make verification easier.
 
 In this part of the project you do not need to include any verification instructions. Only the program code.
