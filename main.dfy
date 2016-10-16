@@ -11,26 +11,19 @@ method isPrefix(pre: string, str: string) returns (res: bool)
   }
 
   var i: nat := 0;
-
-  var a: char := pre[i];
-  var b: char := str[i];
-
-  if (a != b) {
-    return false;
-  }
-
-  i := i + 1;
+  var a: char;
+  var b: char;
   while (i < |pre|)
     decreases |pre| - i;
     invariant 0 <= i <= |pre|
-    invariant a in pre;
-    invariant b in str;
   {
     a := pre[i];
     b := str[i];
+
     if (a != b) {
       return false;
     }
+
     i := i + 1;
   }
 
@@ -48,9 +41,10 @@ method isSubstring(sub: string, str: string) returns (res: bool)
     return true;
   }
   var i: nat := 0;
-  while (i < |str| - |sub|)
+  while (i <= (|str| - |sub|))
     decreases |str| - |sub| - i;
-    invariant 0 <= i <= (|str| - |sub|);
+    invariant 0 <= i;
+    invariant i <= (|str| - |sub|) + 1;
     // if the searched-for substring is of length n,
     // don't try to search for prefixes that begin after the nth position
     // so if we have a length 3 substring candidate, and a length 5 string,
@@ -81,56 +75,58 @@ method isSubstring(sub: string, str: string) returns (res: bool)
 // and str1 have a common substring of length k.
 method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
   requires k <= |str1| && k <= |str2|;
+  ensures (k > |str1| || k > |str2|) ==> found == false;
+  ensures found == true ==> (k <= |str1| || k <= |str2|);
 {
   var candidate: string;
   var longer: string;
   var shorter: string;
+
   var i: nat := 0;
   var j: nat := 0;
-  var isAPrefix: bool;
+
+  var isASubstring: bool;
 
   //taking cues from sets, the null string "" is a substring of every string
   if (k == 0) {
     return true;
   }
 
-
-  if (|str1| < |str2|) {
-    shorter := str1;
-    longer := str2;
-  } else {
-    shorter := str2;
-    longer := str1;
+  if (k > |str1| || k > |str2|) {
+    // what are you at?
+    return false;
   }
 
-  while (i <= |shorter| - k)
-    decreases |shorter| - k - i;
+
+  while (i <= |str1| - k)
+    decreases |str1| - k - i;
     invariant i <= i+k-1;
   {
-    candidate := shorter[i..i+k-1];
-    while (j <= |longer| - k)
-      decreases |longer| - k - j;
-    {
-      isAPrefix := isPrefix(candidate, longer);
-      if (isAPrefix) {
-        return true;
-      }
-      j := j + 1;
+    candidate := str1[i..i+k-1];
+    isASubstring := isSubstring(candidate, str2);
+
+    if (isASubstring) {
+      return true;
     }
+
     i := i + 1;
   }
   return false;
 }
 
 
+
 method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
-  ensures k <= |str1| && k <= |str2|;
+  ensures k <= |str1|;
+  ensures k <= |str2|;
+  ensures (|str1| == 0 || |str2| == 0 ) ==> k == 0;
 {
   var shorter: string;
   var longer: string;
-  var thereIsACommonSubstring: bool;
-
+  var thereIsACommonSubstring: bool := false;
+  var i: nat := 0;
   k := 0;
+
   if (|str1| <= |str2|) {
     shorter := str1;
     longer := str2;
@@ -139,18 +135,15 @@ method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
     longer := str1;
   }
 
-
-  while (k <= |shorter|)
-    decreases |shorter| - k;
+  while (i <= |shorter|)
+    decreases |shorter| - i;
   {
-    thereIsACommonSubstring := haveCommonKSubstring(k, shorter, longer);
-    if (!thereIsACommonSubstring) {
-     return k;
-    } else {
-     break;
+    thereIsACommonSubstring := haveCommonKSubstring(i, shorter, longer);
+    if (thereIsACommonSubstring) {
+      k := i;
     }
-
-    k := k + 1;
+    i := i + 1;
   }
+
   return k;
 }
