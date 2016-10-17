@@ -74,17 +74,11 @@ method isSubstring(sub: string, str: string) returns (res: bool)
 // The following method should return true if and only if str1
 // and str1 have a common substring of length k.
 method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: bool)
-  requires k <= |str1| && k <= |str2|;
   ensures (k > |str1| || k > |str2|) ==> found == false;
-  ensures found == true ==> (k <= |str1| || k <= |str2|);
+  ensures found == true ==> (k <= |str1| && k <= |str2|);
 {
   var candidate: string;
-  var longer: string;
-  var shorter: string;
-
   var i: nat := 0;
-  var j: nat := 0;
-
   var isASubstring: bool;
 
   //taking cues from sets, the null string "" is a substring of every string
@@ -117,8 +111,7 @@ method haveCommonKSubstring(k: nat, str1: string, str2: string) returns (found: 
 
 
 method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
-  ensures k <= |str1|;
-  ensures k <= |str2|;
+  ensures k <= |str1| && k <= |str2|;
   ensures (|str1| == 0 || |str2| == 0 ) ==> k == 0;
 {
   var shorter: string;
@@ -138,11 +131,10 @@ method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
     decreases |shorter| - k;
   {
     thereIsACommonSubstring := haveCommonKSubstring(k, shorter, longer);
-    if (thereIsACommonSubstring) {
-      k := k + 1;
-    } else {
-      return k;
+    if (!thereIsACommonSubstring) {
+        break;
     }
+    k := k + 1;
   }
   return 0;
 }
