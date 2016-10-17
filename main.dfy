@@ -125,7 +125,6 @@ method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
   var longer: string;
   var thereIsACommonSubstring: bool := false;
   var i: nat := 0;
-  k := 0;
 
   if (|str1| <= |str2|) {
     shorter := str1;
@@ -140,10 +139,9 @@ method maxKCommonSubString(str1: string, str2: string) returns (k: nat)
   {
     thereIsACommonSubstring := haveCommonKSubstring(i, shorter, longer);
     if (thereIsACommonSubstring) {
-      k := i;
+      i := i + 1;
+    } else {
+      return i;
     }
-    i := i + 1;
   }
-
-  return k;
 }
